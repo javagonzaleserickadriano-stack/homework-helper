@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homework Helper - Tu Asistente de Tareas</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+       .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+       .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: inherit;
+            resize: vertical;
+            margin-bottom: 15px;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        button:active { transform: scale(0.98); }
+       .respuesta {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 12px;
+            min-height: 100px;
+            white-space: pre-wrap;
+            line-height: 1.6;
+        }
+       .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📚 Homework Helper</h1>
+        <p class="subtitle">Tu asistente para resolver tareas al instante</p>
+        
+        <textarea id="pregunta" placeholder="Escribe tu pregunta o ejercicio aquí... Ej: ¿Cuál es la capital de Perú? o Resuelve: 5x + 3 = 18"></textarea>
+        
+        <button onclick="resolverTarea()">✨ Resolver Tarea</button>
+        
+        <div class="respuesta" id="respuesta">La respuesta aparecerá aquí...</div>
+        
+        <p class="footer">Hecho con 💜 para estudiantes</p>
+    </div>
+
+    <script>
+        async function resolverTarea() {
+            const pregunta = document.getElementById('pregunta').value;
+            const respuestaDiv = document.getElementById('respuesta');
+            
+            if (!pregunta.trim()) {
+                respuestaDiv.textContent = 'Por favor escribe una pregunta primero 😊';
+                return;
+            }
+            
+            respuestaDiv.textContent = 'Pensando... 🤔';
+            
+            try {
+                const res = await fetch('https://api.deepseek.com/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer sk-1234567890abcdef'
+                    },
+                    body: JSON.stringify({
+                        model: 'deepseek-chat',
+                        messages: [
+                            {
+                                role: 'system',
+                                content: 'Eres Homework Helper, un tutor amigable para estudiantes de secundaria. Explica paso a paso, simple y claro. Usa ejemplos si ayuda. Responde en español.'
+                            },
+                            {
+                                role: 'user',
+                                content: pregunta
+                            }
+                        ],
+                        temperature: 0.7,
+                        max_tokens: 500
+                    })
+                });
+                
+                const data = await res.json();
+                const respuesta = data.choices[0].message.content;
+                respuestaDiv.textContent = respuesta;
+                
+            } catch (error) {
+                respuestaDiv.textContent = 'Ups, hubo un error 😅 Intenta de nuevo. Si sigue fallando, revisa tu conexión.';
+            }
+        }
+    </script>
+</body>
+</html>
