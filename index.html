@@ -18,7 +18,7 @@ button{width:95%;padding:12px;background:#ff6b6b;color:#fff;border:0;border-radi
 <div id="r">La respuesta aparece aquí...</div>
 <script>
 async function go(){
-const API='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 ';
+const API_KEY='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 ';
 const q=document.getElementById('q').value;
 const r=document.getElementById('r');
 if(!q){r.innerText='Escribe una pregunta';return}
@@ -26,10 +26,10 @@ r.innerText='Pensando...';
 try{
 const res=await fetch('https://api.groq.com/openai/v1/chat/completions',{
 method:'POST',
-headers:{'Content-Type':'application/json','Authorization':'Bearer '+API},
+headers:{'Content-Type':'application/json','Authorization':'Bearer '+API_KEY},
 body:JSON.stringify({
 model:'llama-3.1-8b-instant',
-messages:[{role:'user',content:'Responde en español simple: '+q}]
+messages:[{role:'system',content:'Eres profesor peruano. Explica paso a paso con emojis. Nunca des solo la respuesta.'},{role:'user',content:q}]
 })});
 const data=await res.json();
 r.innerText=data.choices[0].message.content
